@@ -8,6 +8,10 @@ New Reposiroty for Ideation and Design of a Rag and Chat API / Application
 - [sqlite](https://www.sqlite.org/index.html) for any localish small scale data to store for the app
 - [Back4App](https://www.back4app.com/) possible deployment for containers
 - [Render](https://render.com/) other possible deployment option for spike projects
+- [Python](https://www.python.org/) for scripting, possible backend tools / scripts and api
+- [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide) to make front end code and get some sort of UI
+- [Vite React](https://tailwindcss.com/docs/guides/vite) For a possible front end framework to build out a visual UI for the chatbot
+- [Java](https://www.java.com/en/) possible UI for desktop or even backend api tooling etc. as an alternative to using a React FE
 - add to this as needed...
 
 ## Some thought process
