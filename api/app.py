@@ -5,7 +5,6 @@ import json
 from dotenv import load_dotenv
 from pinecone import Pinecone
 
-# Env Vars
 load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -13,8 +12,6 @@ pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 index = pc.Index(os.getenv("PINECONE_INDEX"))
 EMBEDDING_DIM = os.getenv("EMBEDDING_DIMENSIONS")
 
-
-# Helper Functions
 def get_github_contents(repo_url, path=''):
     parts = repo_url.strip('/').split('/')
     owner, repo = parts[-2], parts[-1]
@@ -122,7 +119,7 @@ def vectorize_repo(index):
         for i in range(0, len(vectors_to_upsert), batch_size):
             batch = vectors_to_upsert[i: i + batch_size]
             index.upsert(vectors=batch, namespace=repo_url)
-            print(f"Upserting batch {i / batch_size + 1}/{(len(vectors_to_upsert) + batch_size - 1) // batch_size}")
+            print(f"Upserting batch {int(i / batch_size + 1)}/{(len(vectors_to_upsert) + batch_size - 1) // batch_size}")
         print(f"\nSuccessfully processed {len(vectorized_files)} files.")
     except Exception as e:
         print(f"Error: {str(e)}")
@@ -130,9 +127,8 @@ def vectorize_repo(index):
 def chat_with_repo(index):
     print("Chatting...")
 
-# REPL Loop
-print("Initializing...")
 
+print("Initializing...")
 while True:
     print("\n=== Github Repository Chat ===")
     print("1. Vectorize a Repository")
