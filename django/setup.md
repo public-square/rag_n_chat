@@ -35,26 +35,37 @@ python3.12 -m poetry install
 ./.venv/bin/python -m poetry install
 ```
 
-## 6. Unit Tests
+## 6. Environment Variables
+Create `django/global/.env` with the necessary access keys:
+```
+OPENAI_API_KEY=
+PINECONE_API_KEY=
+PINECONE_INDEX=rag-n-chat
+EMBEDDING_DIMENSIONS=1536
+GITHUB_TOKEN=
+TAVILY_API_KEY=
+```
+
+## 7. Unit Tests
 ```
 ./.venv/bin/python manage.py test
 ```
 
-## 7. Server Launch
+## 8. Server Launch
 ```
 ./.venv/bin/python manage.py runserver 8001 &
 ```
 
-## 8. Test API Requests
+## 9. Test API Requests
 
-### 8.1 Ping
+### 9.1 Ping
 The ping target responds with proof of life.
 ```
 curl -X POST -H "Content-Type: application/json" \
 http://localhost:8001/api/ping/ -d '{"ping": "123 456 789"}'
 ```
 
-### RAG Repositories
+### 9.2 RAG Repositories
 Repositories may be specified with or without a branch, and the leading `/` is optional.
 If the branch is not specified, `main` is assumed.
 ```
