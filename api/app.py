@@ -42,7 +42,7 @@ def process_file_contents(file_info):
     if file_info['type'] != 'file':
         return None
     
-    valid_extentions = ['.md']
+    valid_extentions = ['.md',".py"]
     
     if not any(file_info['name'].endswith(ext) for ext in valid_extentions):
         return None

@@ -4,7 +4,7 @@ import os
 EMBEDDING_DIMENSION = 1536
 
 def process_content(file_info):
-    valid_extentions = [".md"]
+    valid_extentions = [".md",".py"]
     # print(item['name'])
     if not any(file_info['name'].endswith(ext) for ext in valid_extentions):
         return None
