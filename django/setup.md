@@ -46,14 +46,24 @@ python3.12 -m poetry install
 ```
 
 8. Make test requests against the api
+
+The ping target responds with proof of life.
 ```
 curl -X POST -H "Content-Type: application/json" \
 http://localhost:8001/api/ping/ -d '{"ping": "123 456 789"}'
 ```
 
+Repositories may be specified with or without a branch, and the leading `/` is optional.
+If the branch is not specified, `main` is assumed.
 ```
 curl -X POST -H "Content-Type: application/json" \
-http://localhost:8001/api/vectorize/ -d '{"repository": "public-square/rag_n_chat"}'
+http://localhost:8001/api/vectorize/ -d '{"repository": "public-square/rag_n_chat/django"}'
+```
+
+```
+curl -X POST -H "Content-Type: application/json" \
+http://localhost:8001/api/vectorize/ -d '{"repository": "/public-square/rag_n_chat"}'
+}'
 ```
 
 
