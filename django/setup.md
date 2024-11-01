@@ -63,7 +63,6 @@ http://localhost:8001/api/vectorize/ -d '{"repository": "public-square/rag_n_cha
 ```
 curl -X POST -H "Content-Type: application/json" \
 http://localhost:8001/api/vectorize/ -d '{"repository": "/public-square/rag_n_chat"}'
-}'
 ```
 
 
