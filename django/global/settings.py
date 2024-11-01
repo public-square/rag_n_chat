@@ -22,8 +22,25 @@ API Configuration:
 """
 
 from pathlib import Path
+import environ
+import os
 
+# Initialize environ
+env = environ.Env()
+environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Read .env file
+#environ.Env.read_env(os.path.join(BASE_DIR.parent, 'global', '.env'))
+
+# Environment variables
+OPENAI_API_KEY = env('OPENAI_API_KEY')
+PINECONE_API_KEY = env('PINECONE_API_KEY')
+PINECONE_INDEX = env('PINECONE_INDEX')
+EMBEDDING_DIMENSIONS = env('EMBEDDING_DIMENSIONS')
+GITHUB_TOKEN = env('GITHUB_TOKEN', default='')
+ANTHROPIC_API_KEY = env('ANTHROPIC_API_KEY')
+TAVILY_API_KEY = env('TAVILY_API_KEY')
 
 SECRET_KEY = 'django-insecure-your-secret-key-here'
 

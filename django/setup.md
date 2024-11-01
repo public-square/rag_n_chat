@@ -45,11 +45,17 @@ python3.12 -m poetry install
 ./.venv/bin/python manage.py runserver 8001 &
 ```
 
-8. Make a test request against the api
+8. Make test requests against the api
 ```
 curl -X POST -H "Content-Type: application/json" \
 http://localhost:8001/api/ping/ -d '{"ping": "123 456 789"}'
 ```
+
+```
+curl -X POST -H "Content-Type: application/json" \
+http://localhost:8001/api/vectorize/ -d '{"repository": "public-square/rag_n_chat"}'
+```
+
 
 9. Open the admin console
 ```
