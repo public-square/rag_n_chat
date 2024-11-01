@@ -3,8 +3,8 @@ Main URL configuration for the Rag N Chat API project.
 
 This module defines the root URL patterns:
 - /admin/: Django admin interface for site administration
-- /api/: String reversal API endpoints
-    - /api/reverse/ (POST): String reversal service
+- /api/: Rag N Chat API endpoints
+    - /api/ping/ (POST): Proof of life
         - Accepts text strings up to 1024 characters
         - Returns original and reversed versions
         - Provides error handling for invalid inputs
