@@ -42,7 +42,7 @@ GITHUB_TOKEN = env('GITHUB_TOKEN', default='')
 ANTHROPIC_API_KEY = env('ANTHROPIC_API_KEY')
 TAVILY_API_KEY = env('TAVILY_API_KEY')
 
-SECRET_KEY = 'django-insecure-your-secret-key-here'
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 DEBUG = True
 

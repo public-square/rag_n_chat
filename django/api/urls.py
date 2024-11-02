@@ -33,10 +33,11 @@ This module defines the URL patterns for the API endpoints:
 
 from django.urls import path
 from . import views
+from . import view
 
 urlpatterns = [
     path('ping/', views.ping, name='ping'),
-    path('repo/vectorize/', views.vectorize_repository, name='vectorize_repository'),
-    path('repo/list/', views.list_repositories, name='list_repositories'),
-    path('repo/delete/', views.delete_repository, name='delete_repository'),
+    path('repo/vectorize/', views.repo.vectorize.vectorize_repository, name='vectorize_repository'),
+    path('repo/list/', views.repo.list.list_repositories, name='list_repositories'),
+    path('repo/delete/', views.repo.delete.delete_repository, name='delete_repository'),
 ]
