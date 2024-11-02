@@ -1,5 +1,5 @@
 # Setup Process
-The repository does not contain the execution environment.
+The repository does not contain the execution environment - the steps below will set one up.
 
 ## 1. System Python
 ```
@@ -78,7 +78,6 @@ curl -X POST -H "Content-Type: application/json" \
 http://localhost:8001/api/vectorize/ -d '{"repository": "/public-square/rag_n_chat"}'
 ```
 
-
 ## 9. Admin Console
 Django provides administrative capabilities. A default admin user and password are supplied with the repository.
 ```
@@ -88,8 +87,22 @@ http://127.0.0.1:8001/admin/
 ```
 
 
-
 # Addenda
+
+## Control Script
+A rudimentary control script is supplied, suitable for development use on Linux systems. The script supports the standard start, stop, and status functions, and if `lsof` is available, will also find processes listening on the port used by the system.
+```
+./rag-n-chat start|stop|status|listeners
+```
+
+```
+USAGE:
+./rag-n-chat
+    start      launch the server
+    stop       stop a running server
+    status     print the current process tree
+    listeners  find processes listening on 8001
+```
 
 ## Manual Dependency Addition
 When adding requirements with poetry, be sure to keep them local.
