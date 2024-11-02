@@ -63,7 +63,8 @@ API_SERVER_PORT=8001
 The ping target responds with proof of life.
 ```
 curl -X POST -H "Content-Type: application/json" \
-http://localhost:8001/api/ping/ -d '{"ping": "123 456 789"}'
+http://localhost:8001/api/ping/ \
+-d '{"ping": "123 456 789"}'
 ```
 
 ### 9.2 RAG Repositories
@@ -71,13 +72,27 @@ Repositories may be specified with or without a branch, and the leading `/` is o
 If the branch is not specified, `main` is assumed.
 ```
 curl -X POST -H "Content-Type: application/json" \
-http://localhost:8001/api/vectorize/ -d '{"repository": "public-square/rag_n_chat/django"}'
+http://localhost:8001/api/repo/vectorize/ \
+-d '{"repository": "public-square/rag_n_chat/django"}'
 ```
 
 ```
 curl -X POST -H "Content-Type: application/json" \
-http://localhost:8001/api/vectorize/ -d '{"repository": "/public-square/rag_n_chat"}'
+http://localhost:8001/api/repo/vectorize/ \
+-d '{"repository": "/public-square/rag_n_chat"}'
 ```
+
+```
+curl -X GET -H "Content-Type: application/json" \
+http://localhost:8001/api/repo/list/
+```
+
+```
+curl -X DELETE -H "Content-Type: application/json" \
+http://localhost:8001/api/repo/delete/ \
+-d '{"repository": "public-square/rag_n_chat/main"}'
+```
+
 
 ## 9. Admin Console
 Django provides administrative capabilities. A default admin user and password are supplied with the repository.

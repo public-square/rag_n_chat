@@ -76,7 +76,7 @@ def get_github_contents(owner, repo, branch='main', path=''):
     response = requests.get(api_url, headers=headers)
     if response.status_code != 200:
         raise Exception(f'Github API error: {response.status_code}')
-    
+
     contents = response.json()
     if not isinstance(contents, list):
         return [contents]
@@ -93,30 +93,30 @@ def get_github_contents(owner, repo, branch='main', path=''):
 def process_file_contents(file_info):
     if file_info['type'] != 'file':
         return None
-    
+
     valid_extensions = ['.md', '.py']
-    
+
     if not any(file_info['name'].endswith(ext) for ext in valid_extensions):
         return None
-    
+
     response = requests.get(file_info['download_url'])
     if response.status_code != 200:
         raise Exception(f'Error fetching file content: {response.status_code}')
-    
+
     content = response.text
     truncated_content = content[:8000].strip()
     if not truncated_content:
         return None
-    
+
     embedding_response = openai.Embedding.create(
         input=truncated_content,
         model='text-embedding-ada-002'
     )
     embedding = embedding_response['data'][0]['embedding']
-    
+
     if len(embedding) != 1536:
         raise ValueError(f'Unexpected embedding dimension: {len(embedding)}')
-    
+
     return {
         'file_name': file_info['name'],
         'content': truncated_content,
@@ -133,21 +133,151 @@ def parse_repository_string(repo_string):
     """
     # Remove leading slash if present
     repo_string = repo_string.lstrip('/')
-    
+
     # Split the string into parts
     parts = repo_string.split('/')
-    
+
     if len(parts) < 2 or len(parts) > 3:
         raise ValueError('Repository string must be in format "owner/repo" or "owner/repo/branch"')
-    
+
     owner = parts[0]
     repo = parts[1]
     branch = parts[2] if len(parts) == 3 else 'main'
-    
+
     if not owner or not repo:
         raise ValueError('Both owner and repo must be non-empty')
-    
+
     return owner, repo, branch
+
+@api_view(['GET'])
+def list_repositories(request):
+    """
+    List all repositories (namespaces) stored in the Pinecone database.
+
+    This endpoint accepts GET requests and returns a list of all available
+    repository namespaces in the format owner/repo/branch.
+
+    Returns:
+        Response: JSON response containing the list of repositories
+            {
+                'repositories': [
+                    'owner1/repo1/branch1',
+                    'owner2/repo2/branch2',
+                    ...
+                ]
+            }
+
+    Raises:
+        500 Internal Server Error: If there's an error accessing the database
+            {
+                'error': '<error message>'
+            }
+    """
+    try:
+        # Get list of namespaces from Pinecone
+        stats = index.describe_index_stats()
+        namespaces = list(stats.namespaces.keys())
+
+        # Sort namespaces for consistent output
+        sorted_namespaces = sorted(namespaces)
+
+        return Response({
+            'repositories': sorted_namespaces
+        })
+
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['DELETE'])
+def delete_repository(request):
+    """
+    Delete all vectors for a repository from the Pinecone database.
+
+    Accepts DELETE requests with a JSON body containing:
+    {
+        'repository': 'owner/repo/branch'  # branch is optional, defaults to 'main'
+    }
+    The repository string can optionally start with a forward slash.
+
+    Examples:
+        {
+            'repository': 'microsoft/vscode'  # Uses 'main' branch
+        }
+        {
+            'repository': 'microsoft/vscode/develop'  # Uses 'develop' branch
+        }
+        {
+            'repository': '/microsoft/vscode/main'  # Leading slash is optional
+        }
+
+    Returns:
+        200 OK: Successfully deleted repository vectors
+            {
+                'status': 'success',
+                'repository': 'owner/repo/branch'
+            }
+
+        400 Bad Request: Invalid input
+            {
+                'error': '<error message>'
+            }
+
+        404 Not Found: Repository namespace not found
+            {
+                'error': 'Repository namespace not found'
+            }
+
+        500 Internal Server Error: Database error
+            {
+                'error': '<error message>'
+            }
+    """
+    if not request.data:
+        return Response(
+            {'error': 'Please provide repository string in the request body'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    repository = request.data.get('repository')
+    if not repository:
+        return Response(
+            {'error': 'Repository parameter is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        owner, repo, branch = parse_repository_string(repository)
+        namespace = f'{owner}/{repo}/{branch}'
+
+        # Check if namespace exists
+        stats = index.describe_index_stats()
+        if namespace not in stats.namespaces:
+            return Response(
+                {'error': 'Repository namespace not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Delete all vectors in the namespace
+        index.delete(namespace=namespace, delete_all=True)
+
+        return Response({
+            'status': 'success',
+            'repository': namespace
+        })
+
+    except ValueError as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 @api_view(['POST'])
 def vectorize_repository(request):
