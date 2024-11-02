@@ -1,6 +1,17 @@
 #!/bin/bash
 
+# global environment
+[[ -e global/.env ]] || {
+    echo "Environment file not found: global/.env"
+    exit 1
+}
+source global/.env
+
+# use port from environment if specified
 port=8001
+[[ "x${API_SERVER_PORT}" == "x" ]] || {
+    port=${API_SERVER_PORT}
+}
 
 # get command argument 1
 command=${1}
@@ -69,7 +80,6 @@ function safekill {
     echo "No live processes found."
 }
 
-
 # get the process tree for the first live process
 function listeners {
     command -v lsof >/dev/null || {
@@ -93,6 +103,7 @@ case ${command} in
         echo "Stopping server."
         safekill ${pid}
         rm ${0}.pid
+        echo "Server stopped."
     ;;
     start)
         nohup ./.venv/bin/python manage.py runserver ${port} > ${0}.log 2>&1 &
@@ -101,6 +112,8 @@ case ${command} in
         sleep 3
         pstree -p $! | head -1 | grep -o '[0-9][0-9]*' | head -2 | xargs echo > ${0}.pid
         echo logging to ${0}.log
+        echo "Server started."
+
     ;;
     listeners)
         listeners
