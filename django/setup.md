@@ -94,8 +94,15 @@ http://localhost:8001/api/repo/delete/ \
 -d '{"repository": "public-square/rag_n_chat/main"}'
 ```
 
+### 9.3 Chat
+The chat target hits OpenAI.
+```
+curl --silent -X POST -H "Content-Type: application/json" \
+http://localhost:8001/api/chat/prompt/ \
+-d '{"prompt": "Make me laugh in 50 words or less."}'
+```
 
-## 9. Admin Console
+## 10. Admin Console
 Django provides administrative capabilities. A default admin user and password are supplied with the repository.
 ```
 Credentials: admin 123123
