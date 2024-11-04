@@ -2,11 +2,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 import requests
-import openai
 import os
 from pinecone import Pinecone
+from openai import OpenAI
 
-openai.api_key = os.getenv('OPENAI_API_KEY')
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
 pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
 index = pc.Index(os.getenv('PINECONE_INDEX'))
 
@@ -51,11 +52,9 @@ def process_file_contents(file_info):
     if not truncated_content:
         return None
 
-    embedding_response = openai.Embedding.create(
-        input=truncated_content,
-        model='text-embedding-ada-002'
-    )
-    embedding = embedding_response['data'][0]['embedding']
+    embedding_response = client.embeddings.create(input=truncated_content,
+    model='text-embedding-ada-002')
+    embedding = embedding_response.data[0].embedding
 
     if len(embedding) != 1536:
         raise ValueError(f'Unexpected embedding dimension: {len(embedding)}')
