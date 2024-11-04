@@ -6,10 +6,6 @@ load_dotenv()
 from openai import OpenAI
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
-from pinecone import Pinecone
-pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
-index = pc.Index(os.getenv('PINECONE_INDEX'))
-
 
 def get_github_contents(owner, repo, branch='main', path=''):
     api_url = f'https://api.github.com/repos/{owner}/{repo}/contents/{path}?ref={branch}'

@@ -1,8 +1,11 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from common.utils import parse_repository_string, process_file_contents, get_github_contents
+from pinecone import Pinecone
 import os
-from api.utils import *
+pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
+index = pc.Index(os.getenv('PINECONE_INDEX'))
 
 @api_view(['POST'])
 def vectorize_repository(request):
@@ -68,7 +71,7 @@ def vectorize_repository(request):
         )
 
     try:
-        contents = utils.get_github_contents(owner, repo, branch)
+        contents = get_github_contents(owner, repo, branch)
         vectorized_files = []
 
         for file_info in contents:
