@@ -2,9 +2,7 @@ import requests
 import os
 from dotenv import load_dotenv
 load_dotenv()
-
 from openai import OpenAI
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 
 def get_github_contents(owner, repo, branch='main', path=''):
@@ -45,8 +43,14 @@ def process_file_contents(file_info):
 
     content = response.text
     truncated_content = content[:8000].strip()
+
     if not truncated_content:
         return None
+    try:
+        client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+    except Exception as e:
+        raise Exception(f'OpenAI Instantiation error: {str(e)}')
+
 
     embedding_response = client.embeddings.create(input=truncated_content,
     model='text-embedding-ada-002')
