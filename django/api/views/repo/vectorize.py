@@ -162,6 +162,7 @@ def vectorize_repository(request):
         for file_info in contents:
             try:
                 result = process_file_contents(file_info)
+
                 if result:
                     vectorized_files.append(result)
             except Exception as e:
@@ -170,7 +171,11 @@ def vectorize_repository(request):
 
         if not vectorized_files:
             return Response(
-                {'error': 'No valid files to process in repository'},
+                {
+                    'error': 'No valid files to process in repository: '
+                    + f'{owner}/{repo}/{branch}',
+                    'github_contents': contents
+                },
                 status=status.HTTP_400_BAD_REQUEST
             )
 
