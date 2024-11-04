@@ -3,34 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from pinecone import Pinecone
 import os
+from common.utils import parse_repository_string
 
 pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
 index = pc.Index(os.getenv('PINECONE_INDEX'))
 
-def parse_repository_string(repo_string):
-    """
-    Parse a repository string in the format '/owner/repo/branch' or 'owner/repo/branch'.
-    Returns tuple of (owner, repo, branch).
-    If branch is not specified, returns 'main' as default.
-    Raises ValueError if the format is invalid.
-    """
-    # Remove leading slash if present
-    repo_string = repo_string.lstrip('/')
-
-    # Split the string into parts
-    parts = repo_string.split('/')
-
-    if len(parts) < 2 or len(parts) > 3:
-        raise ValueError('Repository string must be in format "owner/repo" or "owner/repo/branch"')
-
-    owner = parts[0]
-    repo = parts[1]
-    branch = parts[2] if len(parts) == 3 else 'main'
-
-    if not owner or not repo:
-        raise ValueError('Both owner and repo must be non-empty')
-
-    return owner, repo, branch
 
 @api_view(['DELETE'])
 def delete_repository(request):
