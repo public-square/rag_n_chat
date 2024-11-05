@@ -1,6 +1,8 @@
 # Setup Process
 The repository does not contain the execution environment - the steps below will set one up.
 
+Note that these steps should be executed in the `django` directory. Once the project is finalized, that will change.
+
 ## 1. System Python
 ```
 sudo add-apt-repository ppa:deadsnakes/ppa
@@ -16,10 +18,8 @@ python3.12 -m poetry config virtualenvs.create true
 ```
 
 ## 3. Local Virtual Execution Environment
-Observe errors, if any, but don't worry about them yet.
-This will create the local execution environment.
 ```
-python3.12 -m poetry install
+echo exit | python3.12 -m poetry shell
 ```
 
 ## 4. Local Poetry
@@ -30,7 +30,6 @@ python3.12 -m poetry install
 ```
 
 ## 5. Local Dependencies via Poetry
-( This should succeed. )
 ```
 ./.venv/bin/python -m poetry install
 ```
@@ -55,7 +54,9 @@ DJANGO_SECRET_KEY=change-this-value
 
 ## 8. Server Launch
 ```
-./.venv/bin/python manage.py runserver 8001 &
+./rag-n-chat start
+./rag-n-chat status
+cat rag-n-chat.log
 ```
 
 ## 9. Test API Requests
@@ -95,11 +96,20 @@ http://localhost:8001/api/repo/delete/ \
 ```
 
 ### 9.3 Chat
-The chat target hits OpenAI.
+The chat target hits OpenAI. It operates with or without RAG.
+
+#### 9.3.1 No Context
 ```
 curl --silent -X POST -H "Content-Type: application/json" \
 http://localhost:8001/api/chat/prompt/ \
 -d '{"prompt": "Make me laugh in 50 words or less."}'
+```
+
+#### 9.3.2 With Context from a Github Repository
+```
+curl --silent -X POST -H "Content-Type: application/json" \
+http://localhost:8001/api/chat/prompt/ \
+-d '{"prompt": "What is the curl command I should use to hit the ping API target?", "context": ["django/setup.md"],"repository": "public-square/rag_n_chat/django"}'
 ```
 
 ## 10. Admin Console
