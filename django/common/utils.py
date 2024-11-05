@@ -42,7 +42,7 @@ def process_file_contents(file_info):
         raise Exception(f'Error fetching file content: {response.status_code}')
 
     content = response.text
-    truncated_content = content[:8000].strip()
+    truncated_content = content[:80000].strip()
 
     if not truncated_content:
         return None
