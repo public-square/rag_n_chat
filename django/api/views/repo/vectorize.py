@@ -104,7 +104,7 @@ def vectorize_repository(request):
                 'repo': repo,
                 'branch': branch,
                 'download_url': file['download_url'],
-                'content': file['content']
+                'text': file['content']
             }
         } for file in vectorized_files]
 
