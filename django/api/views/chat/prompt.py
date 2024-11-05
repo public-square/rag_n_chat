@@ -171,7 +171,7 @@ def chat_with_gpt(request):
         retrieval_chain = create_retrieval_chain(retriever, combine_docs_chain)
         response = retrieval_chain.invoke(input_dict)
         return Response(
-            { 'response': response }
+            { 'response': response['answer'] }
         )
 
     # execute without Pinecone
