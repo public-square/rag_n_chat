@@ -7,7 +7,7 @@ class StringReversalTests(TestCase):
     def setUp(self):
         """Initialize test client and other test variables."""
         self.client = APIClient()
-        self.reverse_url = reverse('reverse_string')
+        self.reverse_url = reverse('ping')
 
     def test_reverse_simple_string(self):
         """Test basic string reversal functionality."""
