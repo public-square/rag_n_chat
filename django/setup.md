@@ -36,9 +36,9 @@ DJANGO_SECRET_KEY=change-this-value
 
 ## 4. Server Launch
 ```bash
-./rag-n-chat start
-./rag-n-chat status
-cat rag-n-chat.log
+./rag-n-chat-ctrl start
+./rag-n-chat-ctrl status
+cat rag-n-chat-ctrl.log
 ```
 
 ## 5. Test API Requests
@@ -115,12 +115,12 @@ systems. The script supports the standard start, stop, and status functions,
 and if `lsof` is available, will also find processes listening on the port used
 by the system.
 ```bash
-./rag-n-chat start|stop|status|listeners
+./rag-n-chat-ctrl start|stop|status|listeners
 ```
 
 ```
 USAGE:
-./rag-n-chat
+./rag-n-chat-ctrl
     start      launch the server
     stop       stop a running server
     status     print the current process tree
