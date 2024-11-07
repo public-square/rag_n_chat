@@ -1,16 +1,11 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from pinecone import Pinecone
-import os
-from common.utils import parse_repository_string
-
-pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
-index = pc.Index(os.getenv('PINECONE_INDEX'))
+from common.repo.delete import delete_repository
 
 
 @api_view(['DELETE'])
-def delete_repository(request):
+def delete_repository_view(request):
     """
     Delete all vectors for a repository from the Pinecone database.
 
@@ -66,33 +61,22 @@ def delete_repository(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    try:
-        owner, repo, branch = parse_repository_string(repository)
-        namespace = f'{owner}/{repo}/{branch}'
+    result = delete_repository(repository)
 
-        # Check if namespace exists
-        stats = index.describe_index_stats()
-        if namespace not in stats.namespaces:
+    if 'error' in result:
+        if 'Repository namespace not found' in result['error']:
             return Response(
-                {'error': 'Repository namespace not found'},
+                {'error': result['error']},
                 status=status.HTTP_404_NOT_FOUND
             )
-
-        # Delete all vectors in the namespace
-        index.delete(namespace=namespace, delete_all=True)
-
-        return Response({
-            'status': 'success',
-            'repository': namespace
-        })
-
-    except ValueError as e:
+        if any(err in result['error'] for err in ['Invalid repository', 'must be in format']):
+            return Response(
+                {'error': result['error']},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         return Response(
-            {'error': str(e)},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    except Exception as e:
-        return Response(
-            {'error': str(e)},
+            {'error': result['error']},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+    return Response(result)

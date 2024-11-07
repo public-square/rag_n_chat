@@ -36,8 +36,8 @@ from . import views
 
 urlpatterns = [
     path('ping/', views.ping, name='ping'),
-    path('repo/vectorize/', views.repo.vectorize.vectorize_repository, name='vectorize_repository'),
-    path('repo/list/', views.repo.list.list_repositories, name='list_repositories'),
-    path('repo/delete/', views.repo.delete.delete_repository, name='delete_repository'),
-    path('chat/prompt/', views.chat.prompt.chat_with_gpt, name='chat_with_gpt'),
+    path('repo/vectorize/', views.repo.vectorize.vectorize_repository_view, name='vectorize_repository'),
+    path('repo/list/', views.repo.list.list_repositories_view, name='list_repositories'),
+    path('repo/delete/', views.repo.delete.delete_repository_view, name='delete_repository'),
+    path('chat/prompt/', views.chat.prompt.chat_with_gpt_view, name='chat_with_gpt'),
 ]

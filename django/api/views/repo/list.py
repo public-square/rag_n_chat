@@ -1,14 +1,10 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from pinecone import Pinecone
-import os
-
-pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
-index = pc.Index(os.getenv('PINECONE_INDEX'))
+from common.repo.list import list_repositories
 
 @api_view(['GET'])
-def list_repositories(request):
+def list_repositories_view(request):
     """
     List all repositories (namespaces) stored in the Pinecone database.
 
@@ -31,20 +27,12 @@ def list_repositories(request):
                 'error': '<error message>'
             }
     """
-    try:
-        # Get list of namespaces from Pinecone
-        stats = index.describe_index_stats()
-        namespaces = list(stats.namespaces.keys())
+    result = list_repositories()
 
-        # Sort namespaces for consistent output
-        sorted_namespaces = sorted(namespaces)
-
-        return Response({
-            'repositories': sorted_namespaces
-        })
-
-    except Exception as e:
+    if 'error' in result:
         return Response(
-            {'error': str(e)},
+            {'error': result['error']},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+    return Response(result)

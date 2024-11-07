@@ -1,14 +1,10 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from common.utils import parse_repository_string, process_file_contents, get_github_contents
-from pinecone import Pinecone
-import os
-pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
-index = pc.Index(os.getenv('PINECONE_INDEX'))
+from common.repo.vectorize import vectorize_repository
 
 @api_view(['POST'])
-def vectorize_repository(request):
+def vectorize_repository_view(request):
     """
     Vectorize a GitHub repository's contents and store in Pinecone.
 
@@ -63,66 +59,20 @@ def vectorize_repository(request):
         )
 
     try:
-        owner, repo, branch = parse_repository_string(repository)
+        result = vectorize_repository(repository)
+        
+        if 'error' in result:
+            return Response(
+                {'error': result['error']},
+                status=status.HTTP_400_BAD_REQUEST
+                if 'github_contents' in result
+                else status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+            
+        return Response(result)
+        
     except ValueError as e:
         return Response(
             {'error': str(e)},
             status=status.HTTP_400_BAD_REQUEST
-        )
-
-    try:
-        contents = get_github_contents(owner, repo, branch)
-        vectorized_files = []
-
-        for file_info in contents:
-            try:
-                result = process_file_contents(file_info)
-
-                if result:
-                    vectorized_files.append(result)
-            except Exception as e:
-                # Log the error but continue processing other files
-                print(f'Error processing {file_info["name"]}: {str(e)}')
-
-        if not vectorized_files:
-            return Response(
-                {
-                    'error': 'No valid files to process in repository: '
-                    + f'{owner}/{repo}/{branch}',
-                    'github_contents': contents
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        namespace = f'{owner}/{repo}/{branch}'
-        vectors_to_upsert = [{
-            'id': f'{namespace}/{file["file_name"]}',
-            'values': file['embedding'],
-            'metadata': {
-                'file_name': file['file_name'],
-                'owner': owner,
-                'repo': repo,
-                'branch': branch,
-                'download_url': file['download_url'],
-                'text': file['content']
-            }
-        } for file in vectorized_files]
-
-        batch_size = 100
-        for i in range(0, len(vectors_to_upsert), batch_size):
-            batch = vectors_to_upsert[i:i + batch_size]
-            index.upsert(vectors=batch, namespace=namespace)
-
-        return Response({
-            'status': 'success',
-            'processed_files': len(vectorized_files),
-            'owner': owner,
-            'repo': repo,
-            'branch': branch
-        })
-
-    except Exception as e:
-        return Response(
-            {'error': str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
