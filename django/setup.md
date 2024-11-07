@@ -52,8 +52,9 @@ http://localhost:8001/api/ping/ \
 ```
 
 ### 5.2 RAG Repositories
-Repositories may be specified with or without a branch, and the leading `/`
-is optional. If the branch is not specified, `main` is assumed.
+Github repositories may be specified as `owner/repo/branch`. Branch is optional,
+and a leading `/` is ignored if present. If the branch is not specified, `main`
+is assumed.
 ```bash
 curl -X POST -H "Content-Type: application/json" \
 http://localhost:8001/api/repo/vectorize/ \
@@ -134,11 +135,13 @@ A simple command line interface is available, covering the existing API targets.
 ```
 
 ```bash
-./rag-n-chat-cli.py repo-vectorize --repo 'public-square/rag_n_chat/django'
+./rag-n-chat-cli.py repo-vectorize \
+--repo 'public-square/rag_n_chat/django'
 ```
 
 ```bash
-./rag-n-chat-cli.py repo-vectorize --repo 'public-square/rag_n_chat'
+./rag-n-chat-cli.py repo-vectorize \
+--repo 'public-square/rag_n_chat'
 ```
 
 ```bash
@@ -146,15 +149,18 @@ A simple command line interface is available, covering the existing API targets.
 ```
 
 ```bash
-./rag-n-chat-cli.py repo-delete --repo 'public-square/rag_n_chat/main'
+./rag-n-chat-cli.py repo-delete \
+--repo 'public-square/rag_n_chat/main'
 ```
 
 ```bash
-./rag-n-chat-cli.py chat --prompt 'Make me laugh in 50 words or less.'
+./rag-n-chat-cli.py chat \
+--prompt 'Make me laugh in 50 words or less.'
 ```
 
 ```bash
-./rag-n-chat-cli.py --repo 'public-square/rag_n_chat/django' \
+./rag-n-chat-cli.py chat \
+--repo 'public-square/rag_n_chat/django' \
 --prompt "What is the curl command I should use to hit the ping API target?"
 ```
 
