@@ -127,6 +127,37 @@ USAGE:
     listeners  find processes listening on 8001
 ```
 
+## Command Line Interface
+A simple command line interface is available, covering the existing API targets.
+```bash
+./rag-n-chat-cli.py ping --text '123 456'
+```
+
+```bash
+./rag-n-chat-cli.py repo-vectorize --repo 'public-square/rag_n_chat/django'
+```
+
+```bash
+./rag-n-chat-cli.py repo-vectorize --repo 'public-square/rag_n_chat'
+```
+
+```bash
+./rag-n-chat-cli.py repo-list
+```
+
+```bash
+./rag-n-chat-cli.py repo-delete --repo 'public-square/rag_n_chat/main'
+```
+
+```bash
+./rag-n-chat-cli.py chat --prompt 'Make me laugh in 50 words or less.'
+```
+
+```bash
+./rag-n-chat-cli.py --repo 'public-square/rag_n_chat/django' \
+--prompt "What is the curl command I should use to hit the ping API target?"
+```
+
 ## Manual Dependency Addition
 When adding requirements with poetry, be sure to keep them local.
 ```bash
