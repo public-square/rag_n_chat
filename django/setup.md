@@ -27,6 +27,10 @@ GITHUB_TOKEN=
 TAVILY_API_KEY=
 API_SERVER_PORT=8001
 DJANGO_SECRET_KEY=change-this-value
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_ENDPOINT=https://api.smith.langchain.com
+LANGCHAIN_API_KEY=
+LANGCHAIN_PROJECT=rag-n-chat
 ```
 
 ## 3. Unit Tests
