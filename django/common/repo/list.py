@@ -1,8 +1,8 @@
+from django.conf import settings
 from pinecone import Pinecone
-import os
 
-pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
-index = pc.Index(os.getenv('PINECONE_INDEX'))
+pc = Pinecone(api_key=settings.PINECONE_API_KEY)
+index = pc.Index(settings.PINECONE_INDEX)
 
 def list_repositories():
     """

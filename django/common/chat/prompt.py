@@ -1,3 +1,6 @@
+import logging
+from django.conf import settings
+from common.utils import parse_repository_string
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain.chains import create_retrieval_chain
@@ -6,9 +9,7 @@ from langchain import hub
 from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
-import os
-from common.utils import parse_repository_string
-import logging
+
 
 logger = logging.getLogger('django')
 
@@ -38,7 +39,7 @@ def process_chat_prompt(prompt, repository=None, context=None):
     """
     try:
         llm = ChatOpenAI(
-            api_key=os.getenv('OPENAI_API_KEY'),
+            api_key=settings.OPENAI_API_KEY,
             model_name='gpt-4o-mini',
             temperature=0.0
         )
@@ -50,13 +51,13 @@ def process_chat_prompt(prompt, repository=None, context=None):
         try:
             owner, repo, branch = parse_repository_string(repository)
             repository = f'{owner}/{repo}/{branch}'
-            
+
             pc = Pinecone(
-                api_key=os.getenv('PINECONE_API_KEY'),
-                environment=os.getenv('PINECONE_ENVIRONMENT')
+                api_key=settings.PINECONE_API_KEY,
+                environment=settings.PINECONE_ENVIRONMENT
             )
 
-            index = pc.Index(os.getenv('PINECONE_INDEX'))
+            index = pc.Index(settings.PINECONE_INDEX)
 
             if repository not in list(index.describe_index_stats().namespaces.keys()):
                 return {
@@ -66,14 +67,14 @@ def process_chat_prompt(prompt, repository=None, context=None):
             try:
                 embeddings = OpenAIEmbeddings(
                     model="text-embedding-ada-002",
-                    openai_api_key=os.getenv('OPENAI_API_KEY')
+                    openai_api_key=settings.OPENAI_API_KEY
                 )
             except ValueError as e:
                 logger.info('Failed to instantiate OpenAIEmbeddings: ' + str(e))
                 return {'error': str(e)}
 
             input_dict = {"input": prompt}
-            index_name = os.getenv('PINECONE_INDEX')
+            index_name = settings.PINECONE_INDEX
             retrieval_qa_chat_prompt = hub.pull("langchain-ai/retrieval-qa-chat")
             docsearch = PineconeVectorStore.from_existing_index(
                 index_name=index_name,

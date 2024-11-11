@@ -1,6 +1,6 @@
-from pinecone import Pinecone
-import os
+from django.conf import settings
 from common.utils import parse_repository_string
+from pinecone import Pinecone
 
 def delete_repository(repository):
     """
@@ -22,11 +22,11 @@ def delete_repository(repository):
             }
     """
     try:
-        pc_api_key = os.getenv('PINECONE_API_KEY')
+        pc_api_key = settings.PINECONE_API_KEY
         if not pc_api_key:
             return {'error': 'Pinecone API key not found'}
 
-        pc_index_name = os.getenv('PINECONE_INDEX')
+        pc_index_name = settings.PINECONE_INDEX
         if not pc_index_name:
             return {'error': 'Pinecone index name not found'}
 

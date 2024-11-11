@@ -1,15 +1,13 @@
+from django.conf import settings
 import requests
-import os
-from dotenv import load_dotenv
-load_dotenv()
 from openai import OpenAI
 
 
 def get_github_contents(owner, repo, branch='main', path=''):
     api_url = f'https://api.github.com/repos/{owner}/{repo}/contents/{path}?ref={branch}'
     headers = {}
-    if os.getenv('GITHUB_TOKEN'):
-        headers['Authorization'] = f"Token {os.getenv('GITHUB_TOKEN')}"
+    if settings.GITHUB_TOKEN:
+        headers['Authorization'] = f"Token {settings.GITHUB_TOKEN}"
 
     response = requests.get(api_url, headers=headers)
     if response.status_code != 200:
@@ -47,7 +45,7 @@ def process_file_contents(file_info):
     if not truncated_content:
         return None
     try:
-        client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
     except Exception as e:
         raise Exception(f'OpenAI Instantiation error: {str(e)}')
 

@@ -27,25 +27,38 @@ import os
 
 # Initialize environ
 env = environ.Env()
-environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
+environ.Env.read_env(os.path.join(BASE_DIR, 'global', '.env'))
 
-# Read .env file
-#environ.Env.read_env(os.path.join(BASE_DIR.parent, 'global', '.env'))
+# Server configuration
+API_SERVER_PORT = env('API_SERVER_PORT')
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
-# Environment variables
+# GitHub configuration
+GITHUB_CLONE_DIR = os.path.expanduser(env('GITHUB_CLONE_DIR'))
+GITHUB_TOKEN = env('GITHUB_TOKEN', default='')
+
+# OpenAI configuration
 OPENAI_API_KEY = env('OPENAI_API_KEY')
+
+# Pinecone additional settings
+PINECONE_ENVIRONMENT = env('PINECONE_ENVIRONMENT')
 PINECONE_API_KEY = env('PINECONE_API_KEY')
 PINECONE_INDEX = env('PINECONE_INDEX')
 EMBEDDING_DIMENSIONS = env('EMBEDDING_DIMENSIONS')
-GITHUB_TOKEN = env('GITHUB_TOKEN', default='')
-ANTHROPIC_API_KEY = env('ANTHROPIC_API_KEY')
+
+# LangChain configuration
+LANGCHAIN_TRACING_V2 = env('LANGCHAIN_TRACING_V2')
+LANGCHAIN_ENDPOINT = env('LANGCHAIN_ENDPOINT')
+LANGCHAIN_API_KEY = env('LANGCHAIN_API_KEY')
+LANGCHAIN_PROJECT = env('LANGCHAIN_PROJECT')
+
+# Tavily configuration
 TAVILY_API_KEY = env('TAVILY_API_KEY')
 
-SECRET_KEY = env('DJANGO_SECRET_KEY')
 
+# Django settings
 DEBUG = True
-
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [

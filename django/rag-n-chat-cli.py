@@ -1,18 +1,22 @@
 #!./.venv/bin/python
+
 """
-Example of using sub-parser, sub-commands and sub-sub-commands :-)
+rag-n-chat command line interface
 """
 
-from pathlib import Path
-import environ
 import os
-import argparse
 from common.utils import *
+from pathlib import Path
+import argparse
 
 # Initialize environ
-BASE_DIR = Path(__file__).resolve().parent
-env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, 'global', '.env'))
+#BASE_DIR = Path(__file__).resolve().parent
+#env = environ.Env()
+#environ.Env.read_env(os.path.join(BASE_DIR, 'global', '.env'))
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'global.settings')
+import django
+django.setup()
 
 
 def ping(args):
@@ -89,6 +93,29 @@ def chat_prompt(args):
     print (process_chat_prompt(prompt, repo, context))
     print('repo: ', repo)
 
+def env(args):
+    """
+    Display environment variables from settings
+    """
+    env_vars = {
+        'API_SERVER_PORT': django.conf.settings.API_SERVER_PORT,
+        'GITHUB_CLONE_DIR': django.conf.settings.GITHUB_CLONE_DIR,
+        'GITHUB_TOKEN': django.conf.settings.GITHUB_TOKEN,
+        'OPENAI_API_KEY': django.conf.settings.OPENAI_API_KEY,
+        'PINECONE_ENVIRONMENT': django.conf.settings.PINECONE_ENVIRONMENT,
+        'PINECONE_API_KEY': django.conf.settings.PINECONE_API_KEY,
+        'PINECONE_INDEX': django.conf.settings.PINECONE_INDEX,
+        'EMBEDDING_DIMENSIONS': django.conf.settings.EMBEDDING_DIMENSIONS,
+        'LANGCHAIN_TRACING_V2': django.conf.settings.LANGCHAIN_TRACING_V2,
+        'LANGCHAIN_ENDPOINT': django.conf.settings.LANGCHAIN_ENDPOINT,
+        'LANGCHAIN_API_KEY': django.conf.settings.LANGCHAIN_API_KEY,
+        'LANGCHAIN_PROJECT': django.conf.settings.LANGCHAIN_PROJECT,
+        'TAVILY_API_KEY': django.conf.settings.TAVILY_API_KEY
+    }
+
+    for key, value in env_vars.items():
+        print(f'{key}: {value}')
+
 
 if __name__ == '__main__':
     # root parser
@@ -102,7 +129,6 @@ if __name__ == '__main__':
     parser_ping = sub_parsers.add_parser('ping', help='proof of life - returns text reversed')
     parser_ping.add_argument('--text', type=str, help='text to reverse')
     parser_ping.set_defaults(func=ping)
-
 
     # chat/prompt
     parser_chat_prompt = sub_parsers.add_parser('chat', help='chat with LLM')
@@ -125,10 +151,10 @@ if __name__ == '__main__':
     parser_repo_delete.add_argument('--repo', type=str, help='repository owner/repo/branch')
     parser_repo_delete.set_defaults(func=repo_delete)
 
-
+    # env
+    parser_env = sub_parsers.add_parser('env', help='display environment variables from settings')
+    parser_env.set_defaults(func=env)
 
     args = parser.parse_args()
     args.func(args)
-
-
 

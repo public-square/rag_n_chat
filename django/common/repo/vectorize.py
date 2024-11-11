@@ -1,9 +1,9 @@
-from pinecone import Pinecone
-import os
+from django.conf import settings
 from common.utils import parse_repository_string, process_file_contents, get_github_contents
+from pinecone import Pinecone
 
-pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
-index = pc.Index(os.getenv('PINECONE_INDEX'))
+pc = Pinecone(api_key=settings.PINECONE_API_KEY)
+index = pc.Index(settings.PINECONE_INDEX)
 
 def vectorize_repository(repository):
     """
@@ -34,7 +34,7 @@ def vectorize_repository(repository):
         Exception: If there's an error processing the repository
     """
     owner, repo, branch = parse_repository_string(repository)
-    
+
     try:
         contents = get_github_contents(owner, repo, branch)
         vectorized_files = []
